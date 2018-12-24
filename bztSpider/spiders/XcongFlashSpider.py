@@ -2,7 +2,7 @@
 import scrapy
 import datetime
 import json
-from bztSpider.items import NewsFlashItem
+from bztSpider.bztSpider.items import NewsFlashItem
 
 class XcongFlashSpider(scrapy.Spider):
     name = 'xcong'
