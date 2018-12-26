@@ -1,31 +1,64 @@
 # -*- coding: utf-8 -*-
-import scrapy
+from scrapy import Spider, Request, http
 import datetime
 import json
 from bztSpider.items import NewsFlashItem
+import settings
 
 
-class XcongFlashSpider(scrapy.Spider):
-    name = 'xcong'
-    allowed_domains = ['wallstreetcn.com']
-    start_urls = ['https://api-prod.wallstreetcn.com/apiv1/content/lives?channel=xiaocong-channel&client=pc&cursor=&limit=50&first_page=false&accept_symbols=coin']
+# 一般情况 一天的新增简讯数量是70-100条 可以设定过10分钟运行一次爬取5条，经去重后放入数据库
+# 问题1.因为是一次返回多条简讯，不能正好爬到END_TIMESTAMP为止，会多出几条
+class XcongFlashSpider(Spider):
+    name = "XcongFlash"
+    allowed_domains = ["wallstreetcn.com"]
+    # start_urls = [
+    #     "https://api-prod.wallstreetcn.com/apiv1/content/lives?channel=xiaocong-channel&client=pc&cursor=&limit=50&first_page=false&accept_symbols=coin"
+    # ]
+    END_TIMESTAMP = settings.END_TIMESTAMP  # 结束爬取的时间戳
+    ISINCREMENTAL = settings.ISINCREMENTAL  # 是否是增量爬取模式。如果为True，则每次只从最新的时间点爬取50条
 
-    # 建两个表快讯一个 新闻一个 多一个字段表示记录来自于哪个网站
-    def parse(self, response: scrapy.http.response.Response):
+    def start_requests(self):
+        url = "https://api-prod.wallstreetcn.com/apiv1/content/lives?channel={channel}&client={client}&cursor={cursor}&limit={limit}&first_page={first_page}&accept_symbols={accept_symbols}"
+        params = {
+            "channel": "xiaocong-channel",
+            "client": "pc",
+            "cursor": "",
+            "first_page": "false",
+            "accept_symbols": "coin",
+        }
+        if self.ISINCREMENTAL == False:
+            params["limit"] = 50  # 非增量模式 一次爬50条
+        else:
+            params["limit"] = 5  # 增量模式 一次爬5条 10分钟爬一次
+        yield Request(url.format(**params), callback=self.parse)  # 传入关键字参数要加**
+
+    def parse(self, response: http.response.Response):
         if response.status == 200:
-            rows = []
-            patch_number = 50  # 一批插入的数量
             data_json = json.loads(response.text)
-            for i in range(patch_number):
-                data = data_json['data']['items'][i]
-                print(data)
+            for i in range(len(data_json["data"]["items"])):
+                data = data_json["data"]["items"][i]
                 item = NewsFlashItem()
+                item["news_flash_id"] = int(data["id"])
                 item["news_flash_spider_source"] = "小葱"
                 item["news_flash_title"] = data["title"]
                 item["news_flash_content"] = data["content_text"]
-                item["news_flash_pubtime"] = datetime.datetime.fromtimestamp(data['display_time']).strftime(
-                    '%Y-%m-%d %H:%M:%S')  # 转成datetime 再转成字符串
-                item["news_flash_savetime"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                item["news_flash_pubtime"] = datetime.datetime.fromtimestamp(
+                    data["display_time"]
+                ).strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )  # 转成datetime 再转成字符串
+                item["news_flash_savetime"] = datetime.datetime.now().strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
                 item["news_flash_source"] = "小葱快讯"
                 item["news_flash_picture_urls"] = ",".join(data["image_uris"])
                 yield item
+            # 寻找下一个请求的url
+            next_cursor = data_json["data"]["next_cursor"]
+            next_url = "https://api-prod.wallstreetcn.com/apiv1/content/lives?channel=xiaocong-channel&client=pc&cursor={}&limit=50&first_page=false&accept_symbols=coin".format(
+                next_cursor
+            )
+            if int(next_cursor) > self.END_TIMESTAMP and self.ISINCREMENTAL == False:
+                yield Request(next_url, callback=self.parse)
+
+

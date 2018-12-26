@@ -11,7 +11,16 @@ class dbConnector:
     _instance = None  # 单例模式 只能有一个dbConnector
     _instance_lock = threading.Lock()
 
-    def __init__(self, host=None, port=None, user=None, passwd=None, db=None, charset=None, maxconn=5):
+    def __init__(
+        self,
+        host=None,
+        port=None,
+        user=None,
+        passwd=None,
+        db=None,
+        charset=None,
+        maxconn=5,
+    ):
         cf = configparser.ConfigParser()
         cf.read("D:\Code\Python\DigitalStar\\bztSpider\\bztSpider\\utils\dbconfig.ini")
         self.host = cf.get("Mysql", "host") if host == None else host
@@ -24,7 +33,13 @@ class dbConnector:
         self.pool = Queue(maxconn)
         for i in range(maxconn):
             try:
-                conn = pymysql.connect(host=self.host, port=self.port, user=self.user, passwd=self.passwd, db=self.db)
+                conn = pymysql.connect(
+                    host=self.host,
+                    port=self.port,
+                    user=self.user,
+                    passwd=self.passwd,
+                    db=self.db,
+                )
                 conn.autocommit(True)
                 # self.cursor=self.conn.cursor(cursor=pymysql.cursors.DictCursor)
                 self.pool.put(conn)
@@ -46,7 +61,9 @@ class dbConnector:
         try:
             conn = self.pool.get()
             cursor = conn.cursor(cursor=pymysql.cursors.DictCursor)
-            response = cursor.execute(sql, operation) if operation else cursor.execute(sql)
+            response = (
+                cursor.execute(sql, operation) if operation else cursor.execute(sql)
+            )
         except Exception as e:
             print(e)
             cursor.close()
@@ -64,7 +81,9 @@ class dbConnector:
         try:
             conn = self.pool.get()
             cursor = conn.cursor(cursor=pymysql.cursors.DictCursor)
-            response = cursor.execute(sql, operation) if operation else cursor.execute(sql)
+            response = (
+                cursor.execute(sql, operation) if operation else cursor.execute(sql)
+            )
         except Exception as e:
             print(e)
             cursor.close()
@@ -74,7 +93,9 @@ class dbConnector:
             data = cursor.fetchall()
             cursor.close()
             self.pool.put(conn)
-            return response, data
+            # return response, data
+            # 不要返回完整的response 返回结果集就可以了
+            return data
 
     def exec_sql_many(self, sql, operation=None):
         """
@@ -83,7 +104,11 @@ class dbConnector:
         try:
             conn = self.pool.get()
             cursor = conn.cursor(cursor=pymysql.cursors.DictCursor)
-            response = cursor.executemany(sql, operation) if operation else cursor.executemany(sql)
+            response = (
+                cursor.executemany(sql, operation)
+                if operation
+                else cursor.executemany(sql)
+            )
         except Exception as e:
             print(e)
             cursor.close()

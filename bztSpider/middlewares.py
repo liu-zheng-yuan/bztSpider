@@ -6,26 +6,13 @@
 # http://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
-import requests
-from requests import ConnectionError
-import random
 from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
 import os, tempfile, time, sys, logging
-from bs4 import BeautifulSoup
-from selenium.common.exceptions import TimeoutException
 from faker import Factory  # 它可以生成很多模拟的数据，如user-agent
-
-
+import json
+from dbConnector import dbConnector
 logger = logging.getLogger(__name__)
-from scrapy.downloadermiddlewares.redirect import RedirectMiddleware
 
-from scrapy.http import HtmlResponse
-from selenium.webdriver import ActionChains
-from selenium.webdriver import DesiredCapabilities
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 
 class BztspiderSpiderMiddleware(object):
@@ -84,3 +71,4 @@ class RotateUserAgentMiddleware(UserAgentMiddleware):
         f = Factory.create()  # 生成请求头User-Agent
         if f.user_agent():
             request.headers.setdefault("User-Agent", f.user_agent())
+

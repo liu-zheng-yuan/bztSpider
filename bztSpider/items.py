@@ -20,6 +20,7 @@ class NewsFlashItem(Item):
     news_flash_count = Field()  # 总快讯数量
 
 
+
 class NewsItem(Item):
     news_id = Field()  # 唯一主键
     news_spider_source = Field()  # 爬取网站名称
