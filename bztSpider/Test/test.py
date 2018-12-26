@@ -1,7 +1,7 @@
 import requests
 import datetime
 import time
-from dbConnecter import dbConnector
+from dbConnector import dbConnector
 
 # ?channel=xiaocong-channel&client=pc&cursor=1544592877&limit=50&first_page=false&accept_symbols=coin
 # API分析 https://api-prod.wallstreetcn.com/apiv1/content/lives

@@ -13,7 +13,7 @@ class dbConnector:
 
     def __init__(self, host=None, port=None, user=None, passwd=None, db=None, charset=None, maxconn=5):
         cf = configparser.ConfigParser()
-        cf.read("D:\Code\Python\DigitalStar\\bztSpider\\bztSpider\\bztSpider\\bztSpider\\utils\dbconfig.ini")
+        cf.read("D:\Code\Python\DigitalStar\\bztSpider\\bztSpider\\utils\dbconfig.ini")
         self.host = cf.get("Mysql", "host") if host == None else host
         self.user = cf.get("Mysql", "user") if user == None else user
         self.passwd = cf.get("Mysql", "password") if passwd == None else passwd
@@ -114,7 +114,7 @@ class dbConnector:
 # conn.close_conn()
 # print("totol time:", time.time() - start)
 
-# 测试一个线程插入100w的时间 7秒 = =
+# #测试一个线程插入100w的时间 7秒 = =
 # conn = pymysql.connect(host="localhost",port=3306,user="root",passwd="123456",db="bztspider",charset="utf8")
 # conn.autocommit(True)  # 设置自动commit
 # cursor = conn.cursor(cursor=pymysql.cursors.DictCursor)  # 设置返回的结果集用字典来表示，默认是元祖
