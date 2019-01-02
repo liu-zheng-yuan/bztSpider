@@ -27,7 +27,6 @@ class dbConnector:
         self.user = cf.get("Mysql", "user") if user == None else user
         self.passwd = cf.get("Mysql", "password") if passwd == None else passwd
         self.db = cf.get("Mysql", "db") if db == None else db
-        # self.charset = cf.get("Mysql", "charset") if charset == None else charset 加上charset pymysql.connect就报错
         self.port = int(cf.get("Mysql", "port")) if port == None else port
         self.maxconn = maxconn
         self.pool = Queue(maxconn)
@@ -39,6 +38,7 @@ class dbConnector:
                     user=self.user,
                     passwd=self.passwd,
                     db=self.db,
+                    charset="utf8"
                 )
                 conn.autocommit(True)
                 # self.cursor=self.conn.cursor(cursor=pymysql.cursors.DictCursor)
@@ -127,7 +127,7 @@ class dbConnector:
 # conn = dbConnector.get_instance(maxconn = 10)
 # def test_func(num):
 #     data = (("title" + str(i)) for i in range(num))
-#     sql = "insert into news_flash_collection(news_flash_title) values(%s)"
+#     sql = "insert into collection(title) values(%s)"
 #     print(conn.exec_sql_many(sql, data))
 # job_list = []
 # for i in range(10):
@@ -144,7 +144,7 @@ class dbConnector:
 # conn.autocommit(True)  # 设置自动commit
 # cursor = conn.cursor(cursor=pymysql.cursors.DictCursor)  # 设置返回的结果集用字典来表示，默认是元祖
 # data = (("title" + str(i)) for i in range(1000000))
-# sql = "insert into news_flash_collection(news_flash_title) values(%s)"
+# sql = "insert into collection(title) values(%s)"
 # cursor.executemany(sql,data)
 # cursor.close()
 # conn.close()

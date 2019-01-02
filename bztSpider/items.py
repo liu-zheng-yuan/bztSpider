@@ -9,33 +9,32 @@ from scrapy import Item, Field
 
 
 class NewsFlashItem(Item):
-    news_flash_id = Field()  # 唯一主键
-    news_flash_spider_source = Field()  # 爬取网站名称
-    news_flash_title = Field()  # 新闻标题
-    news_flash_content = Field()  # 新闻内容
-    news_flash_pubtime = Field()  # 新闻发布时间
-    news_flash_savetime = Field()  # 新闻抓取日期
-    news_flash_source = Field()  # 新闻出处
-    news_flash_picture_urls = Field()  # 图片url
-    news_flash_count = Field()  # 总快讯数量
-
+    id = Field()  # 唯一主键
+    spider_source = Field()  # 爬取网站名称
+    title = Field()  # 新闻标题
+    content = Field()  # 新闻内容
+    pubtime = Field()  # 新闻发布时间
+    savetime = Field()  # 新闻抓取日期
+    source = Field()  # 新闻出处
+    picture_urls = Field()  # 图片url
+    count = Field()  # 总快讯数量
 
 
 class NewsItem(Item):
-    news_id = Field()  # 唯一主键
-    news_spider_source = Field()  # 爬取网站名称
-    news_title = Field()  # 新闻标题
-    news_content = Field()  # 新闻内容
-    news_pubtime = Field()  # 新闻发布时间
-    news_savetime = Field()  # 新闻抓取日期
-    news_source = Field()  # 新闻出处
-    news_editor = Field()  # 新闻责任编辑
-    news_url = Field()  # 新闻网址
-    news_type = Field()  # 新闻类型
-    news_picture_urls = Field()  # 新闻中的图片网址，逗号隔开
-    news_html_content = Field()  # 新闻原来的html内容
-    news_count = Field()  # 总数量
-
+    id = Field()  # 唯一主键
+    spider_source = Field()  # 爬取网站名称
+    title = Field()  # 新闻标题
+    content = Field()  # 新闻内容
+    abstract = Field()  # 新闻摘要
+    pubtime = Field()  # 新闻发布时间
+    savetime = Field()  # 新闻抓取日期
+    source = Field()  # 新闻出处
+    editor = Field()  # 新闻责任编辑
+    url = Field()  # 新闻网址
+    type = Field()  # 新闻类型
+    picture_url = Field()  # 新闻中的图片网址，逗号隔开
+    html_content = Field()  # 新闻原来的html内容
+    count = Field()  # 总数量
 
 # class BztspiderItem(Item):
 #     # define the fields for your item here like:
