@@ -3,6 +3,7 @@ import configparser
 import time
 from queue import Queue
 import threading
+import settings
 
 start = time.time()
 
@@ -23,11 +24,11 @@ class dbConnector:
     ):
         cf = configparser.ConfigParser()
         cf.read("D:\Code\Python\DigitalStar\\bztSpider\\bztSpider\\utils\dbconfig.ini")
-        self.host = cf.get("Mysql", "host") if host == None else host
-        self.user = cf.get("Mysql", "user") if user == None else user
-        self.passwd = cf.get("Mysql", "password") if passwd == None else passwd
-        self.db = cf.get("Mysql", "db") if db == None else db
-        self.port = int(cf.get("Mysql", "port")) if port == None else port
+        self.host = settings.MYSQL_host if host == None else host
+        self.user = settings.MYSQL_user if user == None else user
+        self.passwd = settings.MYSQL_password if passwd == None else passwd
+        self.db = settings.MYSQL_db if db == None else db
+        self.port = int(settings.MYSQL_port) if port == None else port
         self.maxconn = maxconn
         self.pool = Queue(maxconn)
         for i in range(maxconn):

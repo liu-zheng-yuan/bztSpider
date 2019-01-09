@@ -11,7 +11,7 @@ from enum import Enum
 class XcongNewsSpider(Spider):
     name = "XcongNews"
     END_TIMESTAMP = settings.END_TIMESTAMP  # 结束爬取的时间戳
-    ISINCREMENTAL = settings.ISINCREMENTAL  # 是否是增量爬取模式。如果为True，则每次只从最新的时间点爬取5条
+    ISINCREMENTAL = settings.ISINCREMENTAL  # 是否是增量爬取模式。如果为True，则每次只从最新的时间点爬取5条 每隔3-5分钟爬一次
     custom_settings = {
         'ITEM_PIPELINES': {
             'bztSpider.pipelines.NewsPipeline': 301,
@@ -24,7 +24,7 @@ class XcongNewsSpider(Spider):
         if self.ISINCREMENTAL == False:
             params["limit"] = 20  # 非增量模式 一次爬20条 会往后爬
         else:
-            params["limit"] = 5  # 增量模式 一次爬5条 不会往后爬
+            params["limit"] = 5  # 增量模式 一次爬5条 不会往后爬 每隔3-5分钟爬一次
         yield Request(url.format(**params), callback=self.parse)
 
     def parse(self, response: http.response.Response):

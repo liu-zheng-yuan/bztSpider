@@ -7,14 +7,20 @@
 from dbConnector import dbConnector
 from items import NewsFlashItem, NewsItem
 import emoji
-
+import redis
+import settings
 
 class NewsFlashPipeline(object):
     def __init__(self):
         self.conn = None
+        # redis的数据库连接池
+        self.rpool =None
+        self.rconn = None
 
     def open_spider(self, spider):
         self.conn = dbConnector()
+        self.rpool = redis.ConnectionPool(host=settings.REDIS_host, port=settings.REDIS_port, decode_responses=True)
+        self.rconn = redis.Redis(connection_pool=self.rpool)
 
     def process_item(self, item: NewsFlashItem, spider):
         existed_count = self.conn.exec_sql_feach(
@@ -60,18 +66,28 @@ class NewsFlashPipeline(object):
                 maxCount + 1
             )
         )
+        #更新redis中的count值
+        #每插入一条自增1,如果数据库中没有News_Flash_Count,会从1开始.
+        self.rconn.incr("News_Flash_Count")
         return item
 
     def close_spider(self, spider):
         self.conn.close_conn()
+        self.rpool.disconnect()
 
 
 class NewsPipeline(object):
     def __init__(self):
         self.conn = None
+        # redis的数据库连接池
+        self.rpool =None
+        self.rconn = None
 
     def open_spider(self, spider):
         self.conn = dbConnector()
+        self.rpool = redis.ConnectionPool(host=settings.REDIS_host, port=settings.REDIS_port, decode_responses=True)
+        self.rconn = redis.Redis(connection_pool=self.rpool)
+
 
     def process_item(self, item: NewsItem, spider):
         TYPE_NUMBER = {
@@ -122,6 +138,9 @@ class NewsPipeline(object):
                         maxCount + 1
                     )
                 )
+                # 更新redis中的count值
+                # 每插入一条自增1,如果数据库中没有News_Flash_Count,会从1开始.
+                self.rconn.incr("News_Count")
             else:  # 插入不成功时 找出不成功的文章的url
                 with open("errorlog.txt", "a+") as f:
                     f.write(item["url"] + "未被成功写入\n")
@@ -132,3 +151,5 @@ class NewsPipeline(object):
 
     def close_spider(self, spider):
         self.conn.close_conn()
+        self.rpool.disconnect()
+

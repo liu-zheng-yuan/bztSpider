@@ -6,7 +6,7 @@ from bztSpider.items import NewsFlashItem
 import settings
 
 
-# 一般情况 一天的新增简讯数量是70-100条 可以设定过10分钟运行一次爬取5条，经去重后放入数据库
+# 一般情况 一天的新增简讯数量是70-100条 可以设定过2分钟运行一次爬取5条，经去重后放入数据库
 # 问题1.因为是一次返回多条简讯，不能正好爬到END_TIMESTAMP为止，会多出几条
 class XcongFlashSpider(Spider):
     name = "XcongFlash"
@@ -32,7 +32,7 @@ class XcongFlashSpider(Spider):
         if self.ISINCREMENTAL == False:
             params["limit"] = 50  # 非增量模式 一次爬50条
         else:
-            params["limit"] = 10  # 增量模式 一次爬10条 10分钟爬一次 每次只爬最新的页面 不往后爬
+            params["limit"] = 5  # 增量模式 一次爬5条 2分钟爬一次 每次只爬最新的页面 不往后爬
         yield Request(url.format(**params), callback=self.parse)  # 传入关键字参数要加**
 
     def parse(self, response: http.response.Response):

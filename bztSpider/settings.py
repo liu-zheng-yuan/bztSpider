@@ -93,3 +93,14 @@ ITEM_PIPELINES = {
 #结束爬取的时间戳
 END_TIMESTAMP = 1546272000
 ISINCREMENTAL = False
+
+#Mysql的配置信息
+MYSQL_host = "127.0.0.1"
+MYSQL_user = "root"
+MYSQL_password = "123456"
+MYSQL_db = "bztspider"
+MYSQL_port = "3306"
+
+#redis的配置文件
+REDIS_host = "127.0.0.1"
+REDIS_port = "6379"
