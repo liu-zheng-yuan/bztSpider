@@ -8,6 +8,7 @@ from dbConnector import dbConnector
 from items import NewsFlashItem, NewsItem
 import emoji
 
+
 class NewsFlashPipeline(object):
     def __init__(self):
         self.conn = None
@@ -73,6 +74,12 @@ class NewsPipeline(object):
         self.conn = dbConnector()
 
     def process_item(self, item: NewsItem, spider):
+        TYPE_NUMBER = {
+            "好文精选": 1,
+            "行情分析": 2,
+            "早晚报": 3,
+            "龙虎榜": 4
+        }
         existed_count = self.conn.exec_sql_feach(
             "select count(*) count from news_collection where id = {}".format(
                 item["id"]
@@ -86,15 +93,15 @@ class NewsPipeline(object):
             item["spider_source"],
             item["title"],
             item["abstract"],
-            emoji.demojize(item["content"]), #去除文章中4字节的emoji表情
+            emoji.demojize(item["content"]),  # 去除文章中4字节的emoji表情
             item["pubtime"],
             item["savetime"],
             item["source"],
             item["editor"],
             item["url"],
-            item["type"],
+            TYPE_NUMBER[item["type"]],
             item["picture_url"],
-            emoji.demojize(item["html_content"]),#去除文章中4字节的emoji表情
+            emoji.demojize(item["html_content"]),  # 去除文章中4字节的emoji表情
         )
         try:
             # 要插入的数据
@@ -103,7 +110,7 @@ class NewsPipeline(object):
                 "values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                 row,
             )
-            if type(response) == int: # 当插入成功时才更新数量
+            if type(response) == int:  # 当插入成功时才更新数量
                 # 获取当前最大的count
                 data = self.conn.exec_sql_feach(
                     "select IFNULL(max(count),0) maxCount from news_collection"
@@ -115,12 +122,12 @@ class NewsPipeline(object):
                         maxCount + 1
                     )
                 )
-            else:# 插入不成功时 找出不成功的文章的url
+            else:  # 插入不成功时 找出不成功的文章的url
                 with open("errorlog.txt", "a+") as f:
                     f.write(item["url"] + "未被成功写入\n")
         except Exception as e:
-            with open("errorlog.txt","a+") as f:
-                f.write(item["url"]+"未被成功写入\n")
+            with open("errorlog.txt", "a+") as f:
+                f.write(item["url"] + "未被成功写入\n")
         return item
 
     def close_spider(self, spider):

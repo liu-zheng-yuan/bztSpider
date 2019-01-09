@@ -91,5 +91,5 @@ ITEM_PIPELINES = {
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 #结束爬取的时间戳
-END_TIMESTAMP = 1545235200
-ISINCREMENTAL = True
+END_TIMESTAMP = 1546272000
+ISINCREMENTAL = False
