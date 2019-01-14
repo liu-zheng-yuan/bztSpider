@@ -92,7 +92,7 @@ ITEM_PIPELINES = {
 
 #结束爬取的时间戳
 END_TIMESTAMP = 1546272000
-ISINCREMENTAL = False
+ISINCREMENTAL = True
 
 #Mysql的配置信息
 MYSQL_host = "127.0.0.1"

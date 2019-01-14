@@ -3,7 +3,10 @@ from scrapy import Spider, Request, http
 import datetime
 import json
 from bztSpider.items import NewsFlashItem
+import os
+import sys
 import settings
+
 
 
 # 一般情况 一天的新增简讯数量是70-100条 可以设定过2分钟运行一次爬取5条，经去重后放入数据库
